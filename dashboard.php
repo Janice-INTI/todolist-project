@@ -13,8 +13,8 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch all tasks that are not archived
-$sql = "SELECT * FROM tasks WHERE archived = 0 ORDER BY due_date ASC";
+// Fetch all tasks that are not archived/ Completed
+$sql = "SELECT * FROM tasks WHERE status != 'Completed' ORDER BY due_date ASC";
 $result = $conn->query($sql);
 ?>
 
