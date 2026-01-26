@@ -18,6 +18,7 @@ $category = $_GET['category'] ?? '';
 $priority = $_GET['priority'] ?? '';
 $status   = $_GET['status'] ?? '';
 $sort = $_GET['sort'] ?? 'asc';
+$due_date = $_GET['due_date'] ?? '';
 
 // Foundation of SQL query
 $sql = "SELECT * FROM tasks WHERE 1=1";
@@ -32,8 +33,18 @@ if (!empty($priority)) {
 if (!empty($status)) {
     $sql .= " AND status = '$status'";
 }
-//sort_by   → which column (category | priority | due_date)
-//sort_dir  → direction or custom order
+if (!empty($due_date)) {
+    if ($due_date === 'overdue') {
+        $sql .= " AND due_date < CURDATE()";
+    } elseif ($due_date === 'next_day') {
+        $sql .= " AND due_date = DATE_ADD(CURDATE(), INTERVAL 1 DAY)";
+    } elseif ($due_date === 'next_week') {
+        $sql .= " AND due_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)";
+    } elseif ($due_date === 'next_month') {
+        $sql .= " AND due_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 1 MONTH)";
+    }
+}
+
 // Sorting function
 $sort_by  = $_GET['sort_by'] ?? '';
 $sort_dir = $_GET['sort_dir'] ?? 'asc';
@@ -127,6 +138,23 @@ $result = $conn->query($sql);
             <option value="Pending" <?= ($status=='Pending')?'selected':''; ?>>Pending</option>
             <option value="On-going" <?= ($status=='On-going')?'selected':''; ?>>On-going</option>
             <option value="Completed" <?= ($status=='Completed')?'selected':''; ?>>Completed</option>
+        </select>
+
+        <label>Due Date:</label>
+        <select name="due_date">
+            <option value="">All</option>
+            <option style="color: red;" value="overdue" <?= ($due_date=='overdue')?'selected':''; ?>>
+                Overdue
+            </option>
+            <option style="color: yellow;" value="next_day" <?= ($due_date=='next_day')?'selected':''; ?>>
+                Due in the next day
+            </option>
+            <option value="next_week" <?= ($due_date=='next_week')?'selected':''; ?>>
+                Due in the next week
+            </option>
+            <option value="next_month" <?= ($due_date=='next_month')?'selected':''; ?>>
+                Due in the next month
+            </option>
         </select>
 
         <button type="submit">Filter</button>
