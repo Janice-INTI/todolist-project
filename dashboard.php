@@ -42,6 +42,7 @@ $result = $conn->query($sql);
 <h1>To-Do List Dashboard</h1>
 <h1>Test</h1>
 <h1>Test 2</h1>
+<h1>Test 3</h1>
     
 <table>
     <tr>
