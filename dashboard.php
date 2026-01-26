@@ -13,8 +13,29 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch all tasks that are not archived/ Completed
-$sql = "SELECT * FROM tasks WHERE status != 'Completed' ORDER BY due_date ASC";
+// Get filter values (if any)
+$category = $_GET['category'] ?? '';
+$priority = $_GET['priority'] ?? '';
+$status   = $_GET['status'] ?? '';
+
+// Base SQL query
+$sql = "SELECT * FROM tasks WHERE 1=1";
+
+// Apply filters dynamically
+if (!empty($category)) {
+    $sql .= " AND category = '$category'";
+}
+
+if (!empty($priority)) {
+    $sql .= " AND priority = '$priority'";
+}
+
+if (!empty($status)) {
+    $sql .= " AND status = '$status'";
+}
+
+$sql .= " ORDER BY due_date ASC";
+
 $result = $conn->query($sql);
 ?>
 
@@ -29,18 +50,64 @@ $result = $conn->query($sql);
         th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
         th { background-color: #4CAF50; color: white; }
         tr:nth-child(even) { background-color: #f2f2f2; }
+
         .Pending { color: orange; font-weight: bold; }
         .On-going { color: blue; font-weight: bold; }
         .Completed { color: green; font-weight: bold; }
+
         .High { font-weight: bold; color: red; }
         .Medium { color: orange; }
         .Low { color: gray; }
+
+        .filter-box {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #ccc;
+        }
+
+        select, button {
+            padding: 6px;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
 
 <h1>To-Do List Dashboard</h1>
 
+<!-- FILTER FORM -->
+<div class="filter-box">
+    <form method="GET">
+        <label>Category:</label>
+        <select name="category">
+            <option value="">All</option>
+            <option value="Assignment" <?= ($category=='Assignment')?'selected':''; ?>>Assignment</option>
+            <option value="Assessment" <?= ($category=='Assessment')?'selected':''; ?>>Assessment</option>
+            <option value="Discussion" <?= ($category=='Discussion')?'selected':''; ?>>Discussion</option>
+        </select>
+
+        <label>Priority:</label>
+        <select name="priority">
+            <option value="">All</option>
+            <option value="Low" <?= ($priority=='Low')?'selected':''; ?>>Low</option>
+            <option value="Medium" <?= ($priority=='Medium')?'selected':''; ?>>Medium</option>
+            <option value="High" <?= ($priority=='High')?'selected':''; ?>>High</option>
+        </select>
+
+        <label>Status:</label>
+        <select name="status">
+            <option value="">All</option>
+            <option value="Pending" <?= ($status=='Pending')?'selected':''; ?>>Pending</option>
+            <option value="On-going" <?= ($status=='On-going')?'selected':''; ?>>On-going</option>
+            <option value="Completed" <?= ($status=='Completed')?'selected':''; ?>>Completed</option>
+        </select>
+
+        <button type="submit">Filter</button>
+    </form>
+</div>
+
+<!-- TASK TABLE -->
 <table>
     <tr>
         <th>ID</th>
