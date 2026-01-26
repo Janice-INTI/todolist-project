@@ -23,16 +23,20 @@ $due_date = $_GET['due_date'] ?? '';
 // Foundation of SQL query
 $sql = "SELECT * FROM tasks WHERE 1=1";
 
-// Check that each filter has a value first
+/* Filtering logic */
+// Category Filtering
 if (!empty($category)) {
     $sql .= " AND category = '$category'";
 }
+// Priority Filtering
 if (!empty($priority)) {
     $sql .= " AND priority = '$priority'";
 }
+// Status Filtering
 if (!empty($status)) {
     $sql .= " AND status = '$status'";
 }
+// Due Date Filtering
 if (!empty($due_date)) {
     if ($due_date === 'overdue') {
         $sql .= " AND due_date < CURDATE()";
@@ -146,7 +150,7 @@ $result = $conn->query($sql);
             <option style="color: red;" value="overdue" <?= ($due_date=='overdue')?'selected':''; ?>>
                 Overdue
             </option>
-            <option style="color: yellow;" value="next_day" <?= ($due_date=='next_day')?'selected':''; ?>>
+            <option style="color: gold;" value="next_day" <?= ($due_date=='next_day')?'selected':''; ?>>
                 Due in the next day
             </option>
             <option value="next_week" <?= ($due_date=='next_week')?'selected':''; ?>>
