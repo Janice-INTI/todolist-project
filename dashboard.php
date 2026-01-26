@@ -41,6 +41,8 @@ $result = $conn->query($sql);
 
 <h1>To-Do List Dashboard</h1>
 
+<h1>Test</h1>
+
 <label> Category: </label>
 
     
