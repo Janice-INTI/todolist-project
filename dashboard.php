@@ -16,6 +16,9 @@ if ($conn->connect_error) {
 // Fetch all tasks that are not archived/ Completed
 $sql = "SELECT * FROM tasks WHERE status != 'Completed' ORDER BY due_date ASC";
 $result = $conn->query($sql);
+// Fetch all Category Filters
+$catSQL = "SELECT * FROM category";
+$catResult = $conn->query($catSQL);
 ?>
 
 <!DOCTYPE html>
@@ -45,8 +48,6 @@ $result = $conn->query($sql);
 <select>
     // Fetch all Category Filters 
     <?php
-        $catSQL = "SELECT * FROM category";
-        $catResult = $conn->query($catSQL);
         while($catRow = mysqli_fetch_array($catResult)){
             ?>
             <option value = "<?php echo $catRow['id']?>"><?php echo $catRow['category']?></option>
