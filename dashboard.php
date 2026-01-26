@@ -32,12 +32,33 @@ if (!empty($priority)) {
 if (!empty($status)) {
     $sql .= " AND status = '$status'";
 }
-
+sort_by   → which column (category | priority | due_date)
+sort_dir  → direction or custom order
 // Sorting function
-if ($sort === 'desc') {
-    $sql .= " ORDER BY due_date DESC";
-} else {
-    $sql .= " ORDER BY due_date ASC";
+$sort_by  = $_GET['sort_by'] ?? '';
+$sort_dir = $_GET['sort_dir'] ?? 'asc';
+
+/* Sorting logic */
+// Category Sorting
+if ($sort_by === 'category') {
+    $sql .= ($sort_dir === 'desc')
+        ? " ORDER BY category DESC"
+        : " ORDER BY category ASC";
+} 
+//Priority Sorting
+elseif ($sort_by === 'priority') {
+    // Custom priority order
+    if ($sort_dir === 'hl') {
+        $sql .= " ORDER BY FIELD(priority, 'High','Medium','Low')";
+    } else {
+        $sql .= " ORDER BY FIELD(priority, 'Low','Medium','High')";
+    }
+} 
+//Due Date Sorting
+elseif ($sort_by === 'due_date') {
+    $sql .= ($sort_dir === 'desc')
+        ? " ORDER BY due_date DESC"
+        : " ORDER BY due_date ASC";
 }
 
 $result = $conn->query($sql);
@@ -108,16 +129,6 @@ $result = $conn->query($sql);
             <option value="Completed" <?= ($status=='Completed')?'selected':''; ?>>Completed</option>
         </select>
 
-        <label>Due Date:</label>
-        <select name="sort">
-            <option value="asc" <?= ($sort=='asc')?'selected':''; ?>>
-                Earliest to Latest
-            </option>
-            <option value="desc" <?= ($sort=='desc')?'selected':''; ?>>
-                Latest to Earliest
-            </option>
-        </select>
-
         <button type="submit">Filter</button>
     </form>
 </div>
@@ -128,10 +139,44 @@ $result = $conn->query($sql);
         <th>ID</th>
         <th>Title</th>
         <th>Description</th>
-        <th>Category</th>
-        <th>Priority</th>
+        
+        <th>
+        Category
+            <form method="GET" style="display:inline">
+                <input type="hidden" name="sort_by" value="category">
+                <select name="sort_dir" onchange="this.form.submit()">
+                    <option value="">Sort</option>
+                    <option value="asc">A – Z</option>
+                    <option value="desc">Z – A</option>
+                </select>
+            </form>
+        </th>
+
+        <th>
+        Priority
+            <form method="GET" style="display:inline">
+                <input type="hidden" name="sort_by" value="priority">
+                <select name="sort_dir" onchange="this.form.submit()">
+                    <option value="">Sort</option>
+                    <option value="hl">High → Medium → Low</option>
+                    <option value="lh">Low → Medium → High</option>
+                </select>
+            </form>
+        </th>
+
         <th>Status</th>
-        <th>Due Date</th>
+
+        <th>
+        Due Date
+            <form method="GET" style="display:inline">
+                <input type="hidden" name="sort_by" value="due_date">
+                <select name="sort_dir" onchange="this.form.submit()">
+                    <option value="">Sort</option>
+                    <option value="asc">Sort Ascending</option>
+                    <option value="desc">Sort Descending</option>
+                </select>
+            </form>
+        </th>
     </tr>
 
     <?php
