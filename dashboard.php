@@ -17,6 +17,7 @@ if ($conn->connect_error) {
 $category = $_GET['category'] ?? '';
 $priority = $_GET['priority'] ?? '';
 $status   = $_GET['status'] ?? '';
+$sort = $_GET['sort'] ?? 'asc';
 
 // Base SQL query
 $sql = "SELECT * FROM tasks WHERE 1=1";
@@ -34,7 +35,11 @@ if (!empty($status)) {
     $sql .= " AND status = '$status'";
 }
 
-$sql .= " ORDER BY due_date ASC";
+if ($sort === 'desc') {
+    $sql .= " ORDER BY due_date DESC";
+} else {
+    $sql .= " ORDER BY due_date ASC";
+}
 
 $result = $conn->query($sql);
 ?>
@@ -101,6 +106,16 @@ $result = $conn->query($sql);
             <option value="Pending" <?= ($status=='Pending')?'selected':''; ?>>Pending</option>
             <option value="On-going" <?= ($status=='On-going')?'selected':''; ?>>On-going</option>
             <option value="Completed" <?= ($status=='Completed')?'selected':''; ?>>Completed</option>
+        </select>
+
+        <label>Due Date:</label>
+        <select name="sort">
+            <option value="asc" <?= ($sort=='asc')?'selected':''; ?>>
+                Earliest to Latest
+            </option>
+            <option value="desc" <?= ($sort=='desc')?'selected':''; ?>>
+                Latest to Earliest
+            </option>
         </select>
 
         <button type="submit">Filter</button>
