@@ -32,8 +32,8 @@ if (!empty($priority)) {
 if (!empty($status)) {
     $sql .= " AND status = '$status'";
 }
-sort_by   → which column (category | priority | due_date)
-sort_dir  → direction or custom order
+//sort_by   → which column (category | priority | due_date)
+//sort_dir  → direction or custom order
 // Sorting function
 $sort_by  = $_GET['sort_by'] ?? '';
 $sort_dir = $_GET['sort_dir'] ?? 'asc';
