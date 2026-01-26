@@ -13,28 +13,27 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Get filter values (if any)
+// Filter values (if they exist)
 $category = $_GET['category'] ?? '';
 $priority = $_GET['priority'] ?? '';
 $status   = $_GET['status'] ?? '';
 $sort = $_GET['sort'] ?? 'asc';
 
-// Base SQL query
+// Foundation of SQL query
 $sql = "SELECT * FROM tasks WHERE 1=1";
 
-// Apply filters dynamically
+// Check that each filter has a value first
 if (!empty($category)) {
     $sql .= " AND category = '$category'";
 }
-
 if (!empty($priority)) {
     $sql .= " AND priority = '$priority'";
 }
-
 if (!empty($status)) {
     $sql .= " AND status = '$status'";
 }
 
+// Sorting function
 if ($sort === 'desc') {
     $sql .= " ORDER BY due_date DESC";
 } else {
@@ -51,26 +50,27 @@ $result = $conn->query($sql);
     <style>
         body { font-family: Arial, sans-serif; margin: 30px; background-color: #f7f7f7; }
         h1 { color: #333; }
+
+        /*Table appearance*/
         table { border-collapse: collapse; width: 100%; background-color: #fff; }
         th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
         th { background-color: #4CAF50; color: white; }
         tr:nth-child(even) { background-color: #f2f2f2; }
 
+        /*Filter box appearance*/
+        .filter-box { margin-bottom: 20px; padding: 15px; background: #fff; border: 1px solid #ccc; }
+
+        /*Status indicators*/
         .Pending { color: orange; font-weight: bold; }
         .On-going { color: blue; font-weight: bold; }
         .Completed { color: green; font-weight: bold; }
 
+        /*Priority indicators*/
         .High { font-weight: bold; color: red; }
         .Medium { color: orange; }
         .Low { color: gray; }
 
-        .filter-box {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #fff;
-            border: 1px solid #ccc;
-        }
-
+        /*Button appearance*/
         select, button {
             padding: 6px;
             margin-right: 10px;
@@ -81,7 +81,7 @@ $result = $conn->query($sql);
 
 <h1>To-Do List Dashboard</h1>
 
-<!-- FILTER FORM -->
+/*Filter code*/
 <div class="filter-box">
     <form method="GET">
         <label>Category:</label>
@@ -122,7 +122,7 @@ $result = $conn->query($sql);
     </form>
 </div>
 
-<!-- TASK TABLE -->
+/*Table code*/
 <table>
     <tr>
         <th>ID</th>
