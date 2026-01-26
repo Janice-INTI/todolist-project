@@ -41,11 +41,19 @@ $result = $conn->query($sql);
 
 <h1>To-Do List Dashboard</h1>
 
-<h1>Test</h1>
-
 <label> Category: </label>
-
-    
+<select>
+    // Fetch all Category Filters 
+    <?php
+        $catSQL = "SELECT * FROM category";
+        $catResult = $conn->query($catSQL);
+        while($catRow = mysqli_fetch_array($catResult)){
+            ?>
+            <option value = "<?php echo $catRow['id']?>"><?php echo $catRow['category']?></option>
+        <?php
+        }
+    ?>
+</select>
     
 <table>
     <tr>
