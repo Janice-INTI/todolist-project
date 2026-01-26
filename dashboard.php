@@ -60,7 +60,7 @@ $result = $conn->query($sql);
             echo "<td>".$row['id']."</td>";
             echo "<td>".$row['title']."</td>";
             echo "<td>".$row['description']."</td>";
-            echo "<td class='".$row['category']."'>".$row['category']."</td>";
+            echo "<td>".$row['category']."</td>";
             echo "<td class='".$row['priority']."'>".$row['priority']."</td>";
             echo "<td class='".$row['status']."'>".$row['status']."</td>";
             echo "<td>".$row['due_date']."</td>";
