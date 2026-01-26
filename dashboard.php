@@ -161,6 +161,9 @@ $result = $conn->query($sql);
             </option>
         </select>
 
+        <input type="hidden" name="sort_by" value="<?= htmlspecialchars($sort_by) ?>">
+        <input type="hidden" name="sort_dir" value="<?= htmlspecialchars($sort_dir) ?>">    
+
         <button type="submit">Filter</button>
     </form>
 </div>
@@ -176,6 +179,12 @@ $result = $conn->query($sql);
         Category
             <form method="GET" style="display:inline">
                 <input type="hidden" name="sort_by" value="category">
+            
+                <input type="hidden" name="category" value="<?= htmlspecialchars($category) ?>">
+                <input type="hidden" name="priority" value="<?= htmlspecialchars($priority) ?>">
+                <input type="hidden" name="status" value="<?= htmlspecialchars($status) ?>">
+                <input type="hidden" name="due_date" value="<?= htmlspecialchars($due_date) ?>">
+            
                 <select name="sort_dir" onchange="this.form.submit()">
                     <option value="">Sort</option>
                     <option value="asc">A – Z</option>
@@ -188,6 +197,12 @@ $result = $conn->query($sql);
         Priority
             <form method="GET" style="display:inline">
                 <input type="hidden" name="sort_by" value="priority">
+            
+                <input type="hidden" name="category" value="<?= htmlspecialchars($category) ?>">
+                <input type="hidden" name="priority" value="<?= htmlspecialchars($priority) ?>">
+                <input type="hidden" name="status" value="<?= htmlspecialchars($status) ?>">
+                <input type="hidden" name="due_date" value="<?= htmlspecialchars($due_date) ?>">
+            
                 <select name="sort_dir" onchange="this.form.submit()">
                     <option value="">Sort</option>
                     <option value="hl">High → Medium → Low</option>
@@ -200,8 +215,14 @@ $result = $conn->query($sql);
 
         <th>
         Due Date
-            <form method="GET" style="display:inline">
+           <form method="GET" style="display:inline">
                 <input type="hidden" name="sort_by" value="due_date">
+            
+                <input type="hidden" name="category" value="<?= htmlspecialchars($category) ?>">
+                <input type="hidden" name="priority" value="<?= htmlspecialchars($priority) ?>">
+                <input type="hidden" name="status" value="<?= htmlspecialchars($status) ?>">
+                <input type="hidden" name="due_date" value="<?= htmlspecialchars($due_date) ?>">
+            
                 <select name="sort_dir" onchange="this.form.submit()">
                     <option value="">Sort</option>
                     <option value="asc">Sort Ascending</option>
