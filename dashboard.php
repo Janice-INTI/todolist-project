@@ -80,8 +80,8 @@ $result = $conn->query($sql);
 <body>
 
 <h1>To-Do List Dashboard</h1>
-
-/*Filter code*/
+    
+<!-- Filter code -->
 <div class="filter-box">
     <form method="GET">
         <label>Category:</label>
@@ -122,7 +122,7 @@ $result = $conn->query($sql);
     </form>
 </div>
 
-/*Table code*/
+<!-- Table code -->
 <table>
     <tr>
         <th>ID</th>
