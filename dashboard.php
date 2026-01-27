@@ -246,7 +246,7 @@ $result = $conn->query($sql);
             echo "</tr>";
         }
     } else {
-        echo "<tr><td colspan='7'>No tasks found</td></tr>";
+        echo "<tr><td colspan='7'>No tasks found. If you filtered by Completed tasks and received this result, please head to the Archive page to view those instead.</td></tr>";
     }
     $conn->close();
     ?>
