@@ -244,7 +244,7 @@ function sortTable(sortBy) {
 <body>
 
 <div class="header">
-  <h1>To-Do List Dashboard > Archive / Completed Items</h1>
+  <h1>To-Do List Dashboard > Archive / Completed Tasks</h1>
   
   
   <div>
