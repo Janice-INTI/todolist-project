@@ -13,41 +13,9 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Filter values (if they exist)
-$category = $_GET['category'] ?? '';
-$priority = $_GET['priority'] ?? '';
-$status   = $_GET['status'] ?? '';
-$sort = $_GET['sort'] ?? 'asc';
-$due_date = $_GET['due_date'] ?? '';
 
 // Foundation of SQL query
-$sql = "SELECT * FROM tasks WHERE 1=1";
-
-/* Filtering logic */
-// Category Filtering
-if (!empty($category)) {
-    $sql .= " AND category = '$category'";
-}
-// Priority Filtering
-if (!empty($priority)) {
-    $sql .= " AND priority = '$priority'";
-}
-// Status Filtering
-if (!empty($status)) {
-    $sql .= " AND status = '$status'";
-}
-// Due Date Filtering
-if (!empty($due_date)) {
-    if ($due_date === 'overdue') {
-        $sql .= " AND due_date < CURDATE()";
-    } elseif ($due_date === 'next_day') {
-        $sql .= " AND due_date = DATE_ADD(CURDATE(), INTERVAL 1 DAY)";
-    } elseif ($due_date === 'next_week') {
-        $sql .= " AND due_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)";
-    } elseif ($due_date === 'next_month') {
-        $sql .= " AND due_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 1 MONTH)";
-    }
-}
+$sql = "SELECT * FROM tasks WHERE status = 'Completed'";
 
 // Sorting function
 $sort_by  = $_GET['sort_by'] ?? '';
@@ -276,71 +244,15 @@ function sortTable(sortBy) {
 <body>
 
 <div class="header">
-  <h1>To-Do List Dashboard</h1>
+  <h1>To-Do List Dashboard > Archive / Completed Items</h1>
   
   
   <div>
-  <a href="archive.php" class="btn-warning">
-    View Archive
+  <a href="dashboard.php" class="btn-danger">
+    Go Back
   </a>
-  <button style="margin-left:15px" class="btn-primary">Add New</button>   
   </div>
 </div>
-<details class="filter-box" open>
-  <summary>🔍 Filters</summary>
-
-  <div class="filter-content">
-   <form method="GET">
-        <label>Category:</label>
-        <select class="select-box" name="category">
-            <option value="">All</option>
-            <option value="Assignment" <?= ($category=='Assignment')?'selected':''; ?>>Assignment</option>
-            <option value="Assessment" <?= ($category=='Assessment')?'selected':''; ?>>Assessment</option>
-            <option value="Discussion" <?= ($category=='Discussion')?'selected':''; ?>>Discussion</option>
-        </select>
-
-        <label>Priority:</label>
-        <select class="select-box" name="priority">
-            <option value="">All</option>
-            <option value="Low" <?= ($priority=='Low')?'selected':''; ?>>Low</option>
-            <option value="Medium" <?= ($priority=='Medium')?'selected':''; ?>>Medium</option>
-            <option value="High" <?= ($priority=='High')?'selected':''; ?>>High</option>
-        </select>
-
-        <label>Status:</label>
-        <select class="select-box" name="status">
-            <option value="">All</option>
-            <option value="Pending" <?= ($status=='Pending')?'selected':''; ?>>Pending</option>
-            <option value="On-going" <?= ($status=='On-going')?'selected':''; ?>>On-going</option>
-            <option value="Completed" <?= ($status=='Completed')?'selected':''; ?>>Completed</option>
-        </select>
-
-        <label>Due Date:</label>
-        <select class="select-box" name="due_date">
-            <option value="">All</option>
-            <option style="color: red;" value="overdue" <?= ($due_date=='overdue')?'selected':''; ?>>
-                Overdue
-            </option>
-            <option style="color: gold;" value="next_day" <?= ($due_date=='next_day')?'selected':''; ?>>
-                Due in the next day
-            </option>
-            <option value="next_week" <?= ($due_date=='next_week')?'selected':''; ?>>
-                Due in the next week
-            </option>
-            <option value="next_month" <?= ($due_date=='next_month')?'selected':''; ?>>
-                Due in the next month
-            </option>
-        </select>
-
-        <input type="hidden" name="sort_by" value="<?= htmlspecialchars($sort_by) ?>">
-        <input type="hidden" name="sort_dir" value="<?= htmlspecialchars($sort_dir) ?>">    
-
-		<button class="btn-success">Filter</button>
-		
-    </form>
-  </div>
-</details>
-
 
 <!-- Table code -->
 <table>
@@ -368,9 +280,6 @@ function sortTable(sortBy) {
 			Due Date<?= arrow('due_date') ?>
 		  </a>
         </th>
-		<th>
-			Action
-		</th>
     </tr>
 
     <?php
@@ -384,17 +293,10 @@ function sortTable(sortBy) {
             echo "<td class='".$row['priority']."'>".$row['priority']."</td>";
             echo "<td class='".$row['status']."'>".$row['status']."</td>";
             echo "<td>".$row['due_date']."</td>";
-			
-			
-			 // Add Edit button (last column)
-			echo "<td>";
-			echo "<a href='edit_task.php?id=".$row['id']."' class='btn-primary'>Edit</a>";
-			echo "</td>";
-			
             echo "</tr>";
         }
     } else {
-        echo "<tr><td colspan='8'>No tasks found. If you filtered by Completed tasks and received this result, please head to the Archive page to view those instead.</td></tr>";
+        echo "<tr><td colspan='7'>No tasks found. If you filtered by Completed tasks and received this result, please head to the Archive page to view those instead.</td></tr>";
     }
     $conn->close();
     ?>
