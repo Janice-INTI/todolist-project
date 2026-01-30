@@ -77,8 +77,39 @@ elseif ($sort_by === 'due_date') {
 }
 
 $result = $conn->query($sql);
-?>
 
+function arrow($col) {
+  if (($_GET['sort_by'] ?? '') === $col) {
+    return (($_GET['sort_dir'] ?? 'asc') === 'desc' || ($_GET['sort_dir'] ?? 'hl') === 'hl') ? ' ▼' : ' ▲';
+  }
+  return '';
+}
+?>
+<script>
+function sortTable(sortBy) {
+  const params = new URLSearchParams(window.location.search);
+
+  const currentSort = params.get('sort_by');
+  let currentDir = params.get('sort_dir') || 'asc';
+
+  if (currentSort === sortBy) {
+    // toggle direction
+    if (sortBy === 'priority') {
+      currentDir = currentDir === 'hl' ? 'lh' : 'hl';
+    } else {
+      currentDir = currentDir === 'asc' ? 'desc' : 'asc';
+    }
+  } else {
+    // default direction
+    currentDir = sortBy === 'priority' ? 'hl' : 'asc';
+  }
+
+  params.set('sort_by', sortBy);
+  params.set('sort_dir', currentDir);
+
+  window.location.search = params.toString();
+}
+</script>
 <!DOCTYPE html>
 <html>
 <head>
@@ -93,8 +124,47 @@ $result = $conn->query($sql);
         th { background-color: #4CAF50; color: white; }
         tr:nth-child(even) { background-color: #f2f2f2; }
 
-        /*Filter box appearance*/
-        .filter-box { margin-bottom: 20px; padding: 15px; background: #fff; border: 1px solid #ccc; }
+        /* Filter container */
+		.filter-box {
+		  margin-bottom: 20px;
+		  border: 1px solid #d1d5db;
+		  border-radius: 8px;
+		  background: #fff;
+		}
+
+		/* Header */
+		.filter-box summary {
+		  padding: 12px 16px;
+		  cursor: pointer;
+		  font-size: 14px;
+		  font-weight: 600;
+		  color: #111827;
+		  list-style: none;
+		}
+
+		/* Remove default arrow */
+		.filter-box summary::-webkit-details-marker {
+		  display: none;
+		}
+
+		/* Custom arrow */
+		.filter-box summary::after {
+		  content: "▾";
+		  float: right;
+		  transition: transform 0.2s ease;
+		}
+
+		/* Rotate arrow when open */
+		.filter-box[open] summary::after {
+		  transform: rotate(180deg);
+		}
+
+		/* Content */
+		.filter-content {
+		  padding: 15px;
+		  border-top: 1px solid #e5e7eb;
+		}
+
 
         /*Status indicators*/
         .Pending { color: orange; font-weight: bold; }
@@ -111,17 +181,84 @@ $result = $conn->query($sql);
             padding: 6px;
             margin-right: 10px;
         }
+		
+		.btn-success,
+		.btn-danger,
+		.btn-warning {
+		  padding: 8px 14px;
+		  border: 1px solid transparent;
+		  border-radius: 6px;
+		  font-size: 13px;
+		  font-weight: 500;
+		  color: #fff;
+		  cursor: pointer;
+		  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+		}
+
+		/* Success */
+		.btn-success {
+		  background-color: #22c55e;
+		}
+		.btn-success:hover {
+		  background-color: #16a34a;
+		}
+
+		/* Danger */
+		.btn-danger {
+		  background-color: #ef4444;
+		}
+		.btn-danger:hover {
+		  background-color: #dc2626;
+		}
+
+		/* Warning */
+		.btn-warning {
+		  background-color: #f59e0b;
+		}
+		.btn-warning:hover {
+		  background-color: #d97706;
+		}
+
+		/* Optional subtle focus (accessibility) */
+		.btn-success:focus,
+		.btn-danger:focus,
+		.btn-warning:focus {
+		  outline: none;
+		  box-shadow: 0 0 0 2px rgba(0,0,0,0.08);
+		}
+
+		.select-box {
+		  padding: 8px 12px;
+		  border: 1px solid #d1d5db;
+		  border-radius: 6px;
+		  font-size: 13px;
+		  background-color: #fff;
+		  color: #111827;
+		  cursor: pointer;
+		  min-width: 160px;
+		}
+
+		/* focus state */
+		.select-box:focus {
+		  outline: none;
+		  border-color: #6366f1;
+		}
+
+
     </style>
 </head>
 <body>
 
 <h1>To-Do List Dashboard</h1>
     
-<!-- Filter code -->
-<div class="filter-box">
-    <form method="GET">
+	
+<details class="filter-box" open>
+  <summary>🔍 Filters</summary>
+
+  <div class="filter-content">
+   <form method="GET">
         <label>Category:</label>
-        <select name="category">
+        <select class="select-box" name="category">
             <option value="">All</option>
             <option value="Assignment" <?= ($category=='Assignment')?'selected':''; ?>>Assignment</option>
             <option value="Assessment" <?= ($category=='Assessment')?'selected':''; ?>>Assessment</option>
@@ -129,7 +266,7 @@ $result = $conn->query($sql);
         </select>
 
         <label>Priority:</label>
-        <select name="priority">
+        <select class="select-box" name="priority">
             <option value="">All</option>
             <option value="Low" <?= ($priority=='Low')?'selected':''; ?>>Low</option>
             <option value="Medium" <?= ($priority=='Medium')?'selected':''; ?>>Medium</option>
@@ -137,7 +274,7 @@ $result = $conn->query($sql);
         </select>
 
         <label>Status:</label>
-        <select name="status">
+        <select class="select-box" name="status">
             <option value="">All</option>
             <option value="Pending" <?= ($status=='Pending')?'selected':''; ?>>Pending</option>
             <option value="On-going" <?= ($status=='On-going')?'selected':''; ?>>On-going</option>
@@ -145,7 +282,7 @@ $result = $conn->query($sql);
         </select>
 
         <label>Due Date:</label>
-        <select name="due_date">
+        <select class="select-box" name="due_date">
             <option value="">All</option>
             <option style="color: red;" value="overdue" <?= ($due_date=='overdue')?'selected':''; ?>>
                 Overdue
@@ -164,9 +301,12 @@ $result = $conn->query($sql);
         <input type="hidden" name="sort_by" value="<?= htmlspecialchars($sort_by) ?>">
         <input type="hidden" name="sort_dir" value="<?= htmlspecialchars($sort_dir) ?>">    
 
-        <button type="submit">Filter</button>
+		<button class="btn-success">Filter</button>
+		
     </form>
-</div>
+  </div>
+</details>
+
 
 <!-- Table code -->
 <table>
@@ -176,59 +316,23 @@ $result = $conn->query($sql);
         <th>Description</th>
         
         <th>
-        Category
-            <form method="GET" style="display:inline">
-                <input type="hidden" name="sort_by" value="category">
-            
-                <input type="hidden" name="category" value="<?= htmlspecialchars($category) ?>">
-                <input type="hidden" name="priority" value="<?= htmlspecialchars($priority) ?>">
-                <input type="hidden" name="status" value="<?= htmlspecialchars($status) ?>">
-                <input type="hidden" name="due_date" value="<?= htmlspecialchars($due_date) ?>">
-            
-                <select name="sort_dir" onchange="this.form.submit()">
-                    <option value="">Sort</option>
-                    <option value="asc">A – Z</option>
-                    <option value="desc">Z – A</option>
-                </select>
-            </form>
+			<a href="#" onclick="sortTable('category'); return false;">
+			Category<?= arrow('category') ?>
+		  </a>
         </th>
 
         <th>
-        Priority
-            <form method="GET" style="display:inline">
-                <input type="hidden" name="sort_by" value="priority">
-            
-                <input type="hidden" name="category" value="<?= htmlspecialchars($category) ?>">
-                <input type="hidden" name="priority" value="<?= htmlspecialchars($priority) ?>">
-                <input type="hidden" name="status" value="<?= htmlspecialchars($status) ?>">
-                <input type="hidden" name="due_date" value="<?= htmlspecialchars($due_date) ?>">
-            
-                <select name="sort_dir" onchange="this.form.submit()">
-                    <option value="">Sort</option>
-                    <option value="hl">High → Medium → Low</option>
-                    <option value="lh">Low → Medium → High</option>
-                </select>
-            </form>
+        <a href="#" onclick="sortTable('priority'); return false;">
+			Priority<?= arrow('priority') ?>
+		</a>
         </th>
 
         <th>Status</th>
 
         <th>
-        Due Date
-           <form method="GET" style="display:inline">
-                <input type="hidden" name="sort_by" value="due_date">
-            
-                <input type="hidden" name="category" value="<?= htmlspecialchars($category) ?>">
-                <input type="hidden" name="priority" value="<?= htmlspecialchars($priority) ?>">
-                <input type="hidden" name="status" value="<?= htmlspecialchars($status) ?>">
-                <input type="hidden" name="due_date" value="<?= htmlspecialchars($due_date) ?>">
-            
-                <select name="sort_dir" onchange="this.form.submit()">
-                    <option value="">Sort</option>
-                    <option value="asc">Sort Ascending</option>
-                    <option value="desc">Sort Descending</option>
-                </select>
-            </form>
+         <a href="#" onclick="sortTable('due_date'); return false;">
+			Due Date<?= arrow('due_date') ?>
+		  </a>
         </th>
     </tr>
 
